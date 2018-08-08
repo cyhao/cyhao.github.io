@@ -1,0 +1,34 @@
+---
+layout: default
+---
+
+<div class="posts">
+  {% for post in paginator.posts %}
+    <article class="post">
+
+      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+
+      <div class="entry">
+        {{ post.excerpt }}
+      </div>
+
+      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+    </article>
+  {% endfor %}
+</div>
+
+<div class="main">
+    {% if paginator.total_pages > 1 %}
+    <nav class="pagination fn-clear">
+        <ul class="pagination-list">
+            {% for page in (1..paginator.total_pages) %}
+                {% if page == paginator.page %}
+                    <li class="current"><a href="javascript:void(0);">{{ page }}</a></li>
+                {% else %}
+                    <li><a href="{{ site.url }}/{%if page > 1 %}page{{ page }}/{% endif %}">{{ page }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
