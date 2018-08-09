@@ -18,7 +18,7 @@ permalink: /about/
 ### 联系我
 
 <p>
-<a href="luoye0820@163.com"><img src="/images/gmail.png" alt="我的邮箱"></a>&nbsp;<a target="__blank" href="http://weibo.com/zhuangyancn">
+<a href="luoye0820@163.com"><img src="/images/gmail.png" alt="我的邮箱"></a>&nbsp;<a target="__blank" href="">
 <img src="/images/sina.png" alt="新浪微博"></a>&nbsp;<a target="__blank" href=""><img src="/images/tencent.jpg" alt="腾讯微博"></a>&nbsp;</a>
 <br/>
 </p>
