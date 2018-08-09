@@ -1,0 +1,124 @@
+https://www.zabbix.com/download?zabbix=3.4&os_distribution=centos&os_version=6&db=MySQL
+1、# rpm -i https://repo.zabbix.com/zabbix/3.4/rhel/6/x86_64/zabbix-release-3.4-1.el6.noarch.rpm
+
+2、# yum install zabbix-server-mysql zabbix-web-mysql zabbix-agent zabbix-get
+
+3、创建zabbix库
+mysql> create database zabbix default character set utf8 collate utf8_bin;
+mysql> grant all privileges on zabbix.* to 'cyhipnzab'@'192.168.51.%' identified by 'cyhipnzab';
+导入数据
+cd /usr/share/doc/zabbix-server-mysql-3.4.* (具体版本根据安装的查看)
+zcat create.sql.gz | mysql -uroot zabbix
+
+4、配置zabbix
+vim /etc/zabbix/zabbix_server.conf
+DBHost=192.168.51.211   #zabbix库所在的服务器上
+DBName=zabbix   #zabbix使用的库名
+DBUser=cyhipnzab   #连接zabbix库的用户
+DBPassword=cyhipnzab   #密码
+
+5、安装httpd和php
+由于centos6原生带的php版本是5.3，不满足需要，所以需要更新yum源
+# rpm -Uvh http://mirror.webtatic.com/yum/el6/latest.rpm
+# yum -y install httpd php56w php56w-gd php56w-mysqlnd php56w-bcmath php56w-mbstring php56w-xml php56w-ldap
+
+配置php
+# vim /etc/php.ini
+post_max_size = 16M
+max_execution_time = 300
+max_input_time = 300
+date.timezone = Asia/Shanghai
+always_populate_raw_post_data = -1
+
+配置httpd
+# vim /etc/httpd/conf/httpd.conf
+DirectoryIndex index.html index.html.var index.php
+
+vim /etc/httpd/conf.d/zabbix.conf
+Alias /zabbix /var/www/html/zabbix
+<Directory "/var/www/html/zabbix">
+    Options FollowSymLinks
+    AllowOverride None
+    <IfModule mod_php5.c>
+        php_value max_execution_time 300
+        php_value memory_limit 128M
+        php_value post_max_size 16M
+        php_value upload_max_filesize 2M
+        php_value max_input_time 300
+        php_value always_populate_raw_post_data -1
+        php_value date.timezone Asia/Shanghai
+    </IfModule>
+</Directory>
+
+6、移动zabbix的web文件
+# mkdir /var/www/html/zabbix
+# cp -r /use/share/zabbix/* /var/www/html/zabbix
+#chown -R apache:apache /var/www/html/zabbix
+# chown -R apache:apache /etc/zabbix/web
+
+7、启动服务
+service zabbix-server start
+service zabbix-agent start
+service httpd start
+
+8、登录zabbix web
+http://192.168.51.214/zabbix
+根据页面提示信息配置，预检查，数据库配置等信息
+
+9、页面是英文的，如果需要设置成中文可按照下面指示配置
+
+点击小人头像
+
+Language选择中文后点击Update按钮即可
+但是图形界面字体显示有问题
+
+# cd /var/www/html/zabbix/fonts/
+下载simkai.ttf文件上传然后替换原先的
+[root@redis-test fonts]# mv graphfont.ttf graphfont.ttf.old
+[root@redis-test fonts]# mv simkai.ttf graphfont.ttf
+
+
+
+10、待监控服务器agent配置
+# rpm -i https://repo.zabbix.com/zabbix/3.4/rhel/6/x86_64/zabbix-release-3.4-1.el6.noarch.rpm
+# yum install zabbix-agent zabbix-get
+# vim /etc/zabbix/zabbix_agentd.conf 
+Server=192.168.51.214  #配置server段的服务器IP
+ServerActive=192.168.51.214   #配置server端的服务器IP
+HostnameItem=system.hostname  #本服务器名
+ 	启动即可
+service zabbix-agent start
+
+11、监控mysql服务
+       首先在mysql里创建监控账号
+grant select,process,super,replication client on *.* to 'monitor'@'localhost' identified by 'monitor';
+这里使用percona提供的模板
+下载安装percona-zabbix-templates 
+https://www.percona.com/downloads/percona-monitoring-plugins/LATEST/
+上传文件到服务器，安装
+# rpm -ivh percona-zabbix-templates-1.1.8-1.noarch.rpm
+执行完这一步会生成两个目录 分别是/var/lib/zabbix/percona/scripts和/var/lib/zabbix/percona/templates
+scripts里面存放的是get_mysql_stats_wrapper.sh和ss_get_mysql_stats.php; 
+templates里面存在userparameter_percona_mysql.conf
+zabbix_agent_template_percona_mysql_server_ht_2.0.9-sver1.1.8.xml 
+把userparameter_percona_mysql.conf拷贝到/etc/zabbix/zabbix_agentd.conf.d中,然后改写shell和php脚本，把ss_get_mysql_status.php改成
+$mysql_user = 'monitor';
+$mysql_pass = 'monitor';
+$mysql_port = 3306;
+$mysql_socket = '/tmp/mysql.sock';
+重启agent服务
+
+像zabbix web导入percona模板，自带的模板好像是有点问题，用修改后的模板
+wget http://jaminzhang.github.io/soft-conf/Zabbix/zbx_percona_mysql_template.xml
+
+选择模板，然后选择导入按钮，选择下载好的模板文件即可
+
+
+在配置中把这个模板加入到相应的mysql服务主机中即可
+
+
+
+配置安装中出现的错误
+./get_mysql_stats_wrapper.sh gg   没有任何报错和输出信息
+解决办法  安装zabbix-get
+
