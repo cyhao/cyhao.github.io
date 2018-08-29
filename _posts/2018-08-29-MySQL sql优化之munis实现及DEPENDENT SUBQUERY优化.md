@@ -87,9 +87,9 @@ SQL> select * from t1 minus select * from t2;
 ### 真实需求案例
 
 通过条件查找cyhao2中符合条件的trans_id，在cyhao1中通过trans_id匹配记录，本来两个表中的trans_id应该是相同且相等，这时候cyhao1中记录不全，需要查找出cyhao1中缺失的记录
-
+```
     select trans_id from cyhao2 where trans_id not in (select a.trans_id from cyhao1 a, cyhao2 b where a.TRANS_ID=b.TRANS_ID and b.ACC_DATE='2018-08-24'  and b.is_need_send='T') and  ACC_DATE='2018-08-24'  and is_need_send='T'
-
+```
 此sql执行了2,331,678ms，别惊讶，我的是测试环境1核1G的情况。查询sql的执行计划判断效率
 
 ```
