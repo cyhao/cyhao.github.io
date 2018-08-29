@@ -165,7 +165,7 @@ AND m.is_need_send = 'T';
 返回行数：[4]，耗时：10 ms.
 ```
 
-从上面的执行结果和执行计划可以看出效率方面大幅度提升。当然并不是没有更加优的方法，下面在cyhao2表中添加合适的索引。
+从上面的执行结果和执行计划可以看出效率方面大幅度提升。当然还有优化的可能，下面在cyhao2表中添加合适的索引。
 ```
 mysql>alter table cyhao2 add index idx_adate_isend(acc_date,is_need_send);
 执行成功，耗时：294 ms.
