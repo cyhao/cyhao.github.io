@@ -14,25 +14,29 @@ tags:
 >下载的discovery_rds.py默认是最多获取30条rds实例
 
 修改discovery_rds.py脚本可以实现多实例的发现，修改内容如下
+
 原先：
-```
- def GetRdsList():
-    RdsRequest = DescribeDBInstancesRequest.DescribeDBInstancesRequest()
-    RdsRequest.set_accept_format('json')
-    #RdsInfo = clt.do_action(RdsRequest)
-    RdsInfo = clt.do_action_with_exception(RdsRequest)
-    for RdsInfoJson in (json.loads(RdsInfo))['Items']['DBInstance']:
-```    
+
+     def GetRdsList():
+        RdsRequest = DescribeDBInstancesRequest.DescribeDBInstancesRequest()
+        RdsRequest.set_accept_format('json')
+        #RdsInfo = clt.do_action(RdsRequest)
+        RdsInfo = clt.do_action_with_exception(RdsRequest)
+        for RdsInfoJson in (json.loads(RdsInfo))['Items']['DBInstance']:
+
 
 修改后：
 
-```
-  def GetRdsList():
-    RdsRequest = DescribeDBInstancesRequest.DescribeDBInstancesRequest()
-    RdsRequest.set_accept_format('json')
-    <font color=red>request.set_PageSize(100)  # 每页条数</font>
-    <font color=red>request.set_PageNumber(1)  # 第几页</font>
-    #RdsInfo = clt.do_action(RdsRequest)
-    RdsInfo = clt.do_action_with_exception(RdsRequest)
-    for RdsInfoJson in (json.loads(RdsInfo))['Items']['DBInstance']:
-```
+      def GetRdsList():
+        RdsRequest = DescribeDBInstancesRequest.DescribeDBInstancesRequest()
+        RdsRequest.set_accept_format('json')
+        request.set_PageSize(100)   #每页实例条数
+        request.set_PageNumber(1)    #第几页
+        #RdsInfo = clt.do_action(RdsRequest)
+        RdsInfo = clt.do_action_with_exception(RdsRequest)
+        for RdsInfoJson in (json.loads(RdsInfo))['Items']['DBInstance']:
+
+
+
+
+<font color=red>我</font>
