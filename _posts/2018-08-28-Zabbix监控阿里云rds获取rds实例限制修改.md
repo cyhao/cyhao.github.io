@@ -36,7 +36,3 @@ tags:
         RdsInfo = clt.do_action_with_exception(RdsRequest)
         for RdsInfoJson in (json.loads(RdsInfo))['Items']['DBInstance']:
 
-
-
-
-<font color=red>我</font>
