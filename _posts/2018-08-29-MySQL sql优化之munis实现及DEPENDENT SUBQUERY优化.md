@@ -19,6 +19,7 @@ tags:
      id number primary key,
     n1 number,
     nm varchar2(20));
+
 ### Oracle实现如下
 
 ```
