@@ -40,6 +40,7 @@ MySQL中最小的工作单元，是一系列序列操作的集合，事务可以
 start transaction会使autocommit失效，直到事务commit或者rollback之后才恢复到之前的状态。
 
 # 事务的隔离级别
+
 |事务隔离级别|脏读（dirty read)|不可重复读（Non-Repeatable Read）|幻读（phantom read）|
 |-----------|:---------------:|:-----------------------------:|:------------------:|
 |未提交读（read uncommitted） |可能 |可能 |可能|
@@ -76,6 +77,7 @@ mysql> select @@tx_isolation;
 ```
 
 ### 修改当前会话事务隔离级别测试脏读---RU：
+
 |事务A |事务B|
 |------|----|
 |mysql> set session transaction isolation level read uncommitted;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select @@tx_isolation;<br>+------------------+<br>&#124; @@tx_isolation   &#124;<br>+------------------+<br>&#124; READ-UNCOMMITTED &#124;<br>+------------------+ | mysql> set session transaction isolation level read uncommitted;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select @@tx_isolation;<br>+------------------+<br>&#124; @@tx_isolation   &#124;<br>+------------------+<br>&#124; READ-UNCOMMITTED &#124;<br>+------------------+|
@@ -86,6 +88,7 @@ mysql> select @@tx_isolation;
 |mysql> select * from tt;<br>Empty set (0.00 sec) | |
 
 ### 不可重复读--RC：
+
 |事务A |事务B|
 |------|----|
 |mysql> set session transaction isolation level read committed;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select @@tx_isolation;<br>+----------------+<br>&#124; @@tx_isolation &#124;<br>+----------------+<br>&#124; READ-COMMITTED &#124;<br>+----------------+<br>1 row in set, 1 warning (0.00 sec) |mysql> set session transaction isolation level read committed;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select @@tx_isolation;<br>+----------------+<br>&#124; @@tx_isolation &#124;<br>+----------------+<br>&#124; READ-COMMITTED &#124;<br>+----------------+<br>1 row in set, 1 warning (0.00 sec)|
@@ -97,6 +100,7 @@ mysql> select @@tx_isolation;
 |mysql> commit;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select * from tt;<br>+----+------+<br>&#124; id &#124; name &#124;<br>+----+------+<br>&#124;  1 &#124; bb   &#124;<br>+----+------+<br>1 row in set (0.00 sec) | |
 
 ### 幻读--RC，至于为什么不在repeatable read事务隔离级别下分析，会在后面分析：
+
 |事务A |事务B|
 |------|----|
 |mysql> set session transaction isolation level read committed;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select @@tx_isolation;<br>+----------------+<br>&#124; @@tx_isolation &#124;<br>+----------------+<br>&#124; READ-COMMITTED &#124;<br>+----------------+<br>1 row in set, 1 warning (0.00 sec) |mysql> set session transaction isolation level read committed;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> select @@tx_isolation;<br>+----------------+<br>&#124; @@tx_isolation &#124;<br>+----------------+<br>&#124; READ-COMMITTED &#124;<br>+----------------+<br>1 row in set, 1 warning (0.00 sec)|
@@ -109,6 +113,7 @@ mysql> select @@tx_isolation;
 从上面的分析中可知RC级别是会出现不可重复读和幻读的。
 
 ### 现在我们在RR模式下分析下幻读的情况:
+
 |事务A |事务B|
 |------|----|
 |mysql> select @@tx_isolation;<br>+-----------------+<br>&#124; @@tx_isolation  &#124;<br>+-----------------+<br>&#124; REPEATABLE-READ &#124;<br>+-----------------+ |mysql> select @@tx_isolation;<br>+-----------------+<br>&#124; @@tx_isolation  &#124;<br>+-----------------+<br>&#124; REPEATABLE-READ &#124;<br>+-----------------+|
