@@ -108,7 +108,7 @@ mysql> select @@tx_isolation;
 | |mysql> start transaction;<br>Query OK, 0 rows affected (0.00 sec)<br>mysql> insert into tt values(4,'dd');<br>Query OK, 1 row affected (0.00 sec)|
 |mysql> select * from tt where name>='bb' and name <='ff';<br>+----+------+<br>&#124; id &#124; name &#124;<br>+----+------+<br>&#124;  1 &#124; bb   &#124;<br>&#124;  2 &#124; ff   &#124;<br>+----+------+<br>2 rows in set (0.00 sec) | |
 | |mysql> commit;<br>Query OK, 0 rows affected (0.03 sec)|
-|mysql> select * from tt;<br>+----+------+<br>&#124; id &#124; name &#124;<br>+----+------+<br>&#124;  1 &#124; bb   &#124;<br>&#124;  2 &#124; ff   &#124;<br>&#124;  3 &#124; zz   &#124;<br>+----+------+3 rows in set (0.00 sec)| | 
+|mysql> select * from tt;<br>+----+------+<br>&#124; id &#124; name &#124;<br>+----+------+<br>&#124;  1 &#124; bb   &#124;<br>&#124;  4 &#124; dd   &#124;<br>&#124;  2 &#124; ff   &#124;<br>&#124;  3 &#124; zz   &#124;<br>+----+------+<br>4 rows in set (0.00 sec)| | 
 
 从上面的分析中可知RC级别是会出现不可重复读和幻读的。
 
